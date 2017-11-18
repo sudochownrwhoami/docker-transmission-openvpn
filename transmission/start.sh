@@ -12,6 +12,9 @@ echo "Generating transmission settings.json from env variables"
 # Ensure TRANSMISSION_HOME is created
 mkdir -p ${TRANSMISSION_HOME}
 dockerize -template /etc/transmission/settings.tmpl:${TRANSMISSION_HOME}/settings.json /bin/true
+cat ${TRANSMISSION_HOME}/settings.json > /etc/transmission/
+cat ${TRANSMISSION_HOME}/settings.json > /etc/transmission-daemon/
+echo "Copied to /etc/transmission and /etc/transmission-daemon"
 
 if [ ! -e "/dev/random" ]; then
   # Avoid "Fatal: no entropy gathering module detected" error
@@ -20,7 +23,7 @@ if [ ! -e "/dev/random" ]; then
 fi
 
 . /etc/transmission/userSetup.sh
-
+printenv
 echo "STARTING TRANSMISSION"
 exec sudo -E -u ${RUN_AS} /usr/bin/transmission-daemon -g ${TRANSMISSION_HOME} --logfile ${TRANSMISSION_HOME}/transmission.log &
 
